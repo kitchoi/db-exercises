@@ -35,6 +35,7 @@ def build():
             ]
         )
 
+
 @main.command("test")
 def test():
     subprocess.run(
