@@ -8,6 +8,8 @@ import click
 HERE = os.path.dirname(__file__)
 DEVENV_DIR = os.path.join(HERE, ".env")
 DEVENV_BIN = os.path.join(DEVENV_DIR, "bin")
+PYTHON = os.path.join(DEVENV_BIN, "python")
+
 
 DEPENDENCIES = [
     "sqlalchemy",
@@ -34,13 +36,14 @@ def build():
                 package,
             ]
         )
+    subprocess.run([PYTHON, "setup.py", "develop"])
 
 
 @main.command("test")
 def test():
     subprocess.run(
         [
-            get_command("python"),
+            PYTHON,
             "-m", "unittest",
             "discover",
             "-t", HERE,
