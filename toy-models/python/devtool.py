@@ -13,6 +13,7 @@ PYTHON = os.path.join(DEVENV_BIN, "python")
 
 DEPENDENCIES = [
     "sqlalchemy",
+    "psycopg2-binary",
 ]
 
 
@@ -40,16 +41,19 @@ def build():
 
 
 @main.command("test")
-def test():
-    subprocess.run(
-        [
-            PYTHON,
-            "-m", "unittest",
-            "discover",
-            "-t", HERE,
-            HERE,
-        ]
-    )
+@click.option("-v/--verbose", "verbose", is_flag=True)
+def test(verbose):
+    command = [
+        PYTHON,
+        "-m", "unittest",
+        "discover",
+        "-t", HERE,
+    ]
+    if verbose:
+        command.append("-v")
+
+    command.append(HERE)
+    subprocess.run(command)
 
 
 def get_command(name):
