@@ -6,7 +6,7 @@ import unittest
 
 from sqlalchemy import create_engine
 
-from project import actions
+from project import actions, examples
 
 
 class SQLiteMixin:
@@ -35,7 +35,8 @@ class CheckActionMixin:
     def setUp(self):
         self.backend.setUp(self)
         self.engine = create_engine(self.url)
-        actions.populate_db(self.url, reset=True)
+        instances = examples.small_example()
+        actions.populate_db(self.url, instances, reset=True)
 
     def tearDown(self):
         self.engine.dispose()

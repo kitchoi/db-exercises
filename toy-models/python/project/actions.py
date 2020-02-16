@@ -1,5 +1,4 @@
 
-import datetime
 import contextlib
 
 import sqlalchemy as sa
@@ -22,7 +21,7 @@ def session_scope(connectable):
         session.close()
 
 
-def populate_db(url, reset=False):
+def populate_db(url, instances, reset=False):
     engine = create_engine(url)
     if reset:
         orm.Base.metadata.drop_all(engine)
@@ -30,46 +29,6 @@ def populate_db(url, reset=False):
     orm.Base.metadata.create_all(engine)
 
     with engine.begin() as connection:
-        # Many-to-many relationship between managers and venues
-        eve = orm.Manager(name="Eve")
-        adam = orm.Manager(name="Adam")
-
-        garden = orm.Venue(name="Garden", managers=[eve])
-        pool = orm.Venue(name="Pool Garden", managers=[adam])
-        dinning_hall = orm.Venue(name="Dining Hall", managers=[adam])
-        library = orm.Venue(name="Library", managers=[eve, adam])
-        dancing_hall = orm.Venue(name="Dancing Hall", managers=[])
-
-        # Many-to-one relationship between events and venues
-        wedding = orm.Event(
-            name="C & T Wedding",
-            venue=dinning_hall,
-            start_time=datetime.datetime(2018, 2, 3, 18, 0),
-        )
-        conference = orm.Event(
-            name="Medical conference",
-            venue=library,
-            start_time=datetime.datetime(2018, 9, 1, 9, 0),
-        )
-        comic_con = orm.Event(
-            name="Comic Con",
-            venue=garden,
-            start_time=datetime.datetime(2018, 11, 2, 9, 0),
-        )
-        bible_study = orm.Event(
-            name="Bible study",
-            venue=library,
-            start_time=datetime.datetime(2019, 3, 1, 9, 0),
-        )
-
-        instances = [
-            # managers
-            eve, adam,
-            # venues
-            garden, pool, dinning_hall, library, dancing_hall,
-            # events
-            wedding, conference, comic_con, bible_study,
-        ]
         with session_scope(connection) as session:
             session.add_all(instances)
 
