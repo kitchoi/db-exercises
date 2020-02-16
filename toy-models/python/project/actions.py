@@ -1,4 +1,5 @@
 
+import datetime
 import contextlib
 
 import sqlalchemy as sa
@@ -39,11 +40,35 @@ def populate_db(url, reset=False):
         library = orm.Venue(name="Library", managers=[eve, adam])
         dancing_hall = orm.Venue(name="Dancing Hall", managers=[])
 
+        # Many-to-one relationship between events and venues
+        wedding = orm.Event(
+            name="C & T Wedding",
+            venue=dinning_hall,
+            start_time=datetime.datetime(2018, 2, 3, 18, 0),
+        )
+        conference = orm.Event(
+            name="Medical conference",
+            venue=library,
+            start_time=datetime.datetime(2018, 9, 1, 9, 0),
+        )
+        comic_con = orm.Event(
+            name="Comic Con",
+            venue=garden,
+            start_time=datetime.datetime(2018, 11, 2, 9, 0),
+        )
+        bible_study = orm.Event(
+            name="Bible study",
+            venue=library,
+            start_time=datetime.datetime(2019, 3, 1, 9, 0),
+        )
+
         instances = [
             # managers
             eve, adam,
             # venues
             garden, pool, dinning_hall, library, dancing_hall,
+            # events
+            wedding, conference, comic_con, bible_study,
         ]
         with session_scope(connection) as session:
             session.add_all(instances)
@@ -103,3 +128,26 @@ def get_venue_name_match_any(engine, patterns):
             ).all()
         )
     return values
+
+
+def get_events_by_date_range(engine, start_date, end_date):
+    """ Return events with a start time within the given date range."""
+    with engine.begin() as conn, session_scope(conn) as session:
+        events = session.query(orm.Event).filter(
+            sa.and_(
+                orm.Event.start_time >= start_date,
+                orm.Event.start_time <= end_date,
+            )
+        ).all()
+        session.expunge_all()
+    return events
+
+
+def get_events_in_venue(engine, venue_name):
+    """ Return events hosted in a given venue. """
+    with engine.begin() as conn, session_scope(conn) as session:
+        events = session.query(orm.Event)\
+                    .join(orm.Venue)\
+                    .filter(orm.Venue.name == venue_name).all()
+        session.expunge_all()
+    return events

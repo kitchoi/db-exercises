@@ -12,13 +12,13 @@ class Event(Base):
 
     __tablename__ = "events"
 
-    id = sa.Column(sa.Integer())
-
     name = sa.Column(sa.Text(), primary_key=True)
 
-    venue = sa.Column(sa.Text(), sa.ForeignKey("venues.name"))
+    venue_name = sa.Column(sa.Text(), sa.ForeignKey("venues.name"))
 
-    start_time = sa.Column(sa.TIMESTAMP(timezone=True))
+    venue = sa.orm.relationship("Venue", back_populates="events")
+
+    start_time = sa.Column(sa.DateTime(timezone=True))
 
 
 # Many-to-many relationship between managers and venues

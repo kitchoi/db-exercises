@@ -1,3 +1,4 @@
+import datetime
 import os
 import shutil
 import tempfile
@@ -83,6 +84,26 @@ class CheckActionMixin:
                 "Pool Garden",
             ]
         )
+
+    def test_get_events_by_date_range(self):
+        events = actions.get_events_by_date_range(
+            engine=self.engine,
+            start_date=datetime.date(2018, 8, 1),
+            end_date=datetime.date(2019, 1, 1),
+        )
+
+        self.assertEqual(len(events), 2)
+        event_names = sorted(e.name for e in events)
+        self.assertEqual(event_names, ["Comic Con", "Medical conference"])
+
+    def test_get_events_in_venue(self):
+        events = actions.get_events_in_venue(
+            engine=self.engine,
+            venue_name="Library",
+        )
+        self.assertEqual(len(events), 2)
+        event_names = sorted(e.name for e in events)
+        self.assertEqual(event_names, ["Bible study", "Medical conference"])
 
 
 class TestActionSQLite(CheckActionMixin, SQLiteMixin, unittest.TestCase):
