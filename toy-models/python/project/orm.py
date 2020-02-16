@@ -1,12 +1,14 @@
 import sqlalchemy as sa
 
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.schema import Table
 
 Base = declarative_base()
 
+# Many-to-One relationship between events and venues
+
 
 class Event(Base):
-    # note to self: recipe
 
     __tablename__ = "events"
 
@@ -16,9 +18,16 @@ class Event(Base):
 
     venue = sa.Column(sa.Text(), sa.ForeignKey("venues.name"))
 
-    hosts = sa.Column()
-
     start_time = sa.Column(sa.TIMESTAMP(timezone=True))
+
+
+# Many-to-many relationship between managers and venues
+manager_venue_table = Table(
+    "manager_venue",
+    Base.metadata,
+    sa.Column("manager_name", sa.Text, sa.ForeignKey("managers.name")),
+    sa.Column("venue_name", sa.Text, sa.ForeignKey("venues.name")),
+)
 
 
 class Venue(Base):
@@ -27,7 +36,11 @@ class Venue(Base):
 
     name = sa.Column(sa.Text(), primary_key=True)
 
-    managers = sa.Column(sa.Text(), sa.ForeignKey("managers.name"))
+    managers = sa.orm.relationship(
+        "Manager",
+        secondary=manager_venue_table,
+        back_populates="venues",
+    )
 
     events = sa.orm.relationship("Event")
 
@@ -37,6 +50,12 @@ class Manager(Base):
     __tablename__ = "managers"
 
     name = sa.Column(sa.Text(), primary_key=True)
+
+    venues = sa.orm.relationship(
+        "Venue",
+        secondary=manager_venue_table,
+        back_populates="managers",
+    )
 
 
 class Person(Base):

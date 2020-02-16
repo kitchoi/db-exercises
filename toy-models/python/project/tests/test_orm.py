@@ -1,6 +1,6 @@
 import unittest
 
-from project.databases import orm
+from project import orm
 
 
 class TestORM(unittest.TestCase):
