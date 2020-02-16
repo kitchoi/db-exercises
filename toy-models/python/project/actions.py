@@ -17,6 +17,8 @@ def session_scope(connectable):
     except Exception:
         session.rollback()
         raise
+    finally:
+        session.close()
 
 
 def populate_db(url, reset=False):
