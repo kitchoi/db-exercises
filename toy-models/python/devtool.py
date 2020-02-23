@@ -77,15 +77,6 @@ def test(verbose):
         raise click.ClickException("Failed.")
 
 
-@main.command("persist")
-@click.argument("dbname", type=str)
-def persist(dbname):
-    subprocess.run(
-        os.path.join(HERE, "postgres_start.sh"),
-        env={"NAME": dbname},
-    )
-
-
 def get_command(name):
     return os.path.join(DEVENV_BIN, name)
 
