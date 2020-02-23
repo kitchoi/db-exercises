@@ -2,7 +2,6 @@
 import contextlib
 
 import sqlalchemy as sa
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from project import orm
@@ -21,8 +20,7 @@ def session_scope(connectable):
         session.close()
 
 
-def populate_db(url, instances, reset=False):
-    engine = create_engine(url)
+def populate_db(engine, instances, reset=False):
     if reset:
         orm.Base.metadata.drop_all(engine)
 

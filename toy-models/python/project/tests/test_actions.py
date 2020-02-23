@@ -1,42 +1,16 @@
 import datetime
-import os
-import shutil
-import tempfile
 import unittest
 
-from sqlalchemy import create_engine
-
 from project import actions, examples
-
-
-class SQLiteMixin:
-
-    def setUp(self):
-        temp_folder = tempfile.mkdtemp()
-        self.addCleanup(shutil.rmtree, temp_folder)
-        db = os.path.join(temp_folder, "test.db")
-        self.url = "sqlite:////{}".format(db)
-
-    def tearDown(self):
-        pass
-
-
-class PostgresMixin:
-
-    def setUp(self):
-        self.url = "postgresql://postgres:postgres@0.0.0.0/testdb"
-
-    def tearDown(self):
-        pass
+from project.testing import SQLiteBackend, PostgresBackend
 
 
 class CheckActionMixin:
 
     def setUp(self):
         self.backend.setUp(self)
-        self.engine = create_engine(self.url)
         instances = examples.small_example()
-        actions.populate_db(self.url, instances, reset=True)
+        actions.populate_db(self.engine, instances, reset=True)
 
     def tearDown(self):
         self.engine.dispose()
@@ -107,11 +81,11 @@ class CheckActionMixin:
         self.assertEqual(event_names, ["Bible study", "Medical conference"])
 
 
-class TestActionSQLite(CheckActionMixin, SQLiteMixin, unittest.TestCase):
+class TestActionSQLite(CheckActionMixin, unittest.TestCase):
 
-    backend = SQLiteMixin
+    backend = SQLiteBackend
 
 
-class TestActionPostgres(CheckActionMixin, PostgresMixin, unittest.TestCase):
+class TestActionPostgres(CheckActionMixin, unittest.TestCase):
 
-    backend = PostgresMixin
+    backend = PostgresBackend

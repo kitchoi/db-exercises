@@ -77,3 +77,22 @@ def large_example():
             name="Event #{}".format(i),
             venue=venues[min(len(venues) - 1, i)]
         )
+
+
+def run_example(engine):
+    from project import actions
+    from project import analyze
+
+    instances = large_example()
+    actions.populate_db(engine, instances)
+
+    with analyze.explain_analyze(engine) as results:
+        actions.get_events_in_venue(
+            engine=engine,
+            venue_name="Venue #4",
+        )
+        actions.get_events_in_venue(
+            engine=engine,
+            venue_name="Venue #5",
+        )
+    return results
