@@ -51,26 +51,28 @@ def test(verbose):
         env={"NAME": dbname},
         stdin=subprocess.PIPE,
     )
-    time.sleep(8)
+    with postgres_process:
+        time.sleep(8)
 
-    command = [
-        PYTHON,
-        "-m", "unittest",
-        "discover",
-        "-t", HERE,
-    ]
-    if verbose:
-        command.append("-v")
+        command = [
+            PYTHON,
+            "-m", "unittest",
+            "discover",
+            "-t", HERE,
+        ]
+        if verbose:
+            command.append("-v")
 
-    command.append(HERE)
-    subprocess.run(
-        command,
-        env={
-            "POSRGRES_URL": "postgresql://postgres:postgres@0.0.0.0/" + dbname
-        })
+        command.append(HERE)
+        completed_proc = subprocess.run(
+            command,
+            env={
+                "POSRGRES_URL": "postgresql://postgres:postgres@0.0.0.0/" + dbname
+            })
 
-    postgres_process.communicate(input=b"y")
-    postgres_process.terminate()
+        postgres_process.communicate(input=b"y")
+    if completed_proc.returncode > 0:
+        raise click.ClickException("Failed.")
 
 
 @main.command("persist")
