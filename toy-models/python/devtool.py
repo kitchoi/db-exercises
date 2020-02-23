@@ -50,8 +50,13 @@ def test(verbose):
         os.path.join(HERE, "postgres_start.sh"),
         env={"NAME": dbname},
         stdin=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     with postgres_process:
+        # Reset
+        postgres_process.stdin.write(b"y\n")
+
         time.sleep(8)
 
         command = [
@@ -71,8 +76,9 @@ def test(verbose):
                     "postgresql://postgres:postgres@0.0.0.0/" + dbname
                 ),
             })
+        # Clean up
+        postgres_process.stdin.write(b"y\n")
 
-        postgres_process.communicate(input=b"y")
     if completed_proc.returncode > 0:
         raise click.ClickException("Failed.")
 
