@@ -31,6 +31,11 @@ class CheckActionMixin:
             ["Adam", "Eve"],
         )
 
+    def test_get_managers_by_venue_error(self):
+        with self.assertRaises(ValueError) as exception_context:
+            actions.get_managers_by_venue(engine=self.engine, venue_name="NA")
+        self.assertIn("No venues found", str(exception_context.exception))
+
     def test_get_manager_by_venue_like(self):
         managers = actions.get_manager_by_venue_like(
             self.engine,
