@@ -16,11 +16,13 @@ def explain_analyze(engine, analyze=True):
             text = "EXPLAIN "
             if analyze:
                 text += "ANALYZE "
-            text += str(
-                clause.compile(compile_kwargs={"literal_binds": True})
-            )
+            query_text = str(
+                clause.compile(compile_kwargs={"literal_binds": True}))
+            text += query_text
+            result = [query_text]
             text = sa.sql.expression.text(text)
-            results.append(second_engine.execute(text).fetchall())
+            result.extend(second_engine.execute(text).fetchall())
+            results.append(result)
 
     try:
         yield results
