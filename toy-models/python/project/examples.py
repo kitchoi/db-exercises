@@ -99,4 +99,8 @@ def run_example(engine):
             engine=engine,
             venue_name="Venue #2",
         )
+        actions.get_manager_by_venue_like(
+            engine=engine,
+            patterns=["Venue%"],
+        )
     return results
