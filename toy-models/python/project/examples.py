@@ -36,7 +36,7 @@ def small_example():
         start_time=datetime.datetime(2019, 3, 1, 9, 0),
     )
 
-    return [
+    instances = [
         # managers
         eve, adam,
         # venues
@@ -44,3 +44,36 @@ def small_example():
         # events
         wedding, conference, comic_con, bible_study,
     ]
+    for instance in instances:
+        yield instance
+
+
+def large_example():
+    n_managers = 100
+    managers = []
+    for i in range(n_managers):
+        manager = orm.Manager(
+            name="Manager #{}".format(i)
+        )
+        if i < 10:
+            managers.append(manager)
+        yield manager
+
+    # Every venue will have many managers
+    n_venues = 100
+    venues = []
+    for i in range(n_venues):
+        venue = orm.Venue(
+            name="Venue #{}".format(i),
+            managers=managers,
+        )
+        if i < 10:
+            venues.append(venue)
+        yield venue
+
+    n_events = 10000
+    for i in range(n_events):
+        yield orm.Event(
+            name="Event #{}".format(i),
+            venue=venues[min(len(venues) - 1, i)]
+        )

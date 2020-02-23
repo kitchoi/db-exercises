@@ -30,7 +30,8 @@ def populate_db(url, instances, reset=False):
 
     with engine.begin() as connection:
         with session_scope(connection) as session:
-            session.add_all(instances)
+            for instance in instances:
+                session.add(instance)
 
 
 def count_managers(engine):
