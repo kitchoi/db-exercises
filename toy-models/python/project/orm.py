@@ -14,7 +14,7 @@ class Event(Base):
 
     name = sa.Column(sa.Text(), primary_key=True)
 
-    venue_name = sa.Column(sa.Text(), sa.ForeignKey("venues.name"))
+    venue_name = sa.Column(sa.Text(), sa.ForeignKey("venues.name"), index=True)
 
     venue = sa.orm.relationship("Venue", back_populates="events")
 
