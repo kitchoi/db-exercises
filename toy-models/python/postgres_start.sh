@@ -2,11 +2,15 @@
 
 POSTGRES_PASSWORD=postgres
 PGPASSWORD=postgres
-CONTAINER_NAME=postgres-toy
+
+if test -z "$NAME"
+then
+    NAME=postgres-toy
+fi
 echo $PGPASSWORD
-docker stop $CONTAINER_NAME && docker container rm $CONTAINER_NAME
-docker run --name $CONTAINER_NAME -p 5432:5432 -d postgres
+docker stop $NAME && docker container rm $NAME
+docker run --name $NAME -p 5432:5432 -d postgres
 sleep 5
-psql -h 0.0.0.0 -p 5432 -U postgres -a -f postgres_setup.sql
+docker exec $NAME psql -c "CREATE DATABASE $NAME;" -p 5432 -U postgres
 read -n 1 -p "Continue?"
-docker stop $CONTAINER_NAME && docker container rm $CONTAINER_NAME
+docker stop $NAME && docker container rm $NAME

@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import time
 
 import click
 
@@ -43,6 +44,15 @@ def build():
 @main.command("test")
 @click.option("-v/--verbose", "verbose", is_flag=True)
 def test(verbose):
+
+    dbname = "test"
+    postgres_process = subprocess.Popen(
+        os.path.join(HERE, "postgres_start.sh"),
+        env={"NAME": dbname},
+        stdin=subprocess.PIPE,
+    )
+    time.sleep(8)
+
     command = [
         PYTHON,
         "-m", "unittest",
@@ -53,7 +63,23 @@ def test(verbose):
         command.append("-v")
 
     command.append(HERE)
-    subprocess.run(command)
+    subprocess.run(
+        command,
+        env={
+            "POSRGRES_URL": "postgresql://postgres:postgres@0.0.0.0/" + dbname
+        })
+
+    postgres_process.communicate(input=b"y")
+    postgres_process.terminate()
+
+
+@main.command("persist")
+@click.argument("dbname", type=str)
+def persist(dbname):
+    subprocess.run(
+        os.path.join(HERE, "postgres_start.sh"),
+        env={"NAME": dbname},
+    )
 
 
 def get_command(name):
