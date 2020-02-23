@@ -25,8 +25,10 @@ class Event(Base):
 manager_venue_table = Table(
     "manager_venue",
     Base.metadata,
-    sa.Column("manager_name", sa.Text, sa.ForeignKey("managers.name")),
-    sa.Column("venue_name", sa.Text, sa.ForeignKey("venues.name")),
+    sa.Column(
+        "manager_name", sa.Text, sa.ForeignKey("managers.name"), index=True),
+    sa.Column(
+        "venue_name", sa.Text, sa.ForeignKey("venues.name"), index=True),
 )
 
 
