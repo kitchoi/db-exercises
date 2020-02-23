@@ -23,6 +23,14 @@ class CheckActionMixin:
         manager = actions.get_manager_by_name(self.engine, "Adam")
         self.assertEqual(manager.name, "Adam")
 
+    def test_get_managers_by_venue(self):
+        managers = actions.get_managers_by_venue(
+            engine=self.engine, venue_name="Library")
+        self.assertEqual(
+            sorted(manager.name for manager in managers),
+            ["Adam", "Eve"],
+        )
+
     def test_get_manager_by_venue_like(self):
         managers = actions.get_manager_by_venue_like(
             self.engine,

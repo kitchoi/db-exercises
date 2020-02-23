@@ -48,6 +48,21 @@ def get_manager_by_name(engine, name):
     return manager
 
 
+def get_managers_by_venue(engine, venue_name):
+    """ Return all managers for a given venue."""
+    with engine.begin() as conn, session_scope(conn) as session:
+        query = session.query(orm.Venue).filter(
+            orm.Venue.name == venue_name
+        ).options(sa.orm.joinedload(orm.Venue.managers))
+        try:
+            venue = query.one()
+        except sa.orm.exc.NoResultFound:
+            raise ValueError(f"No venues found for name: {venue_name!r}")
+        managers = venue.managers
+        session.expunge_all()
+    return managers
+
+
 def get_manager_by_venue_like(engine, patterns):
     """ Return managers for venues with a name matching any of the given
     patterns.
