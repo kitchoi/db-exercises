@@ -67,7 +67,9 @@ def test(verbose):
         completed_proc = subprocess.run(
             command,
             env={
-                "POSRGRES_URL": "postgresql://postgres:postgres@0.0.0.0/" + dbname
+                "POSRGRES_URL": (
+                    "postgresql://postgres:postgres@0.0.0.0/" + dbname
+                ),
             })
 
         postgres_process.communicate(input=b"y")
