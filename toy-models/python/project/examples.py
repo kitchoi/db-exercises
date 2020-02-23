@@ -95,4 +95,8 @@ def run_example(engine):
             engine=engine,
             venue_name="Venue #5",
         )
+        actions.get_managers_by_venue(
+            engine=engine,
+            venue_name="Venue #2",
+        )
     return results
